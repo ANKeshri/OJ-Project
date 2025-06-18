@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
     fullName: {
         type: String,
         required: true
+    },
+    leetcodeProfile: {
+        type: String,
+        required: false
     }
 }, {
     timestamps: true

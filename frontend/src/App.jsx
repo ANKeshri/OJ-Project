@@ -4,6 +4,7 @@ import Signup from './components/Signup';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import Home from './pages/Home';
+import ProfilePage from './pages/ProfilePage';
 import './App.css'
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
             </div>
           </div>
         } />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </Router>
   );

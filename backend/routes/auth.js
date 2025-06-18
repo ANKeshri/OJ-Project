@@ -6,7 +6,7 @@ const User = require('../models/User');
 // Register Route
 router.post('/register', async (req, res) => {
     try {
-        const { email, password, dob, fullName } = req.body;
+        const { email, password, dob, fullName, leetcodeProfile } = req.body;
 
         // Check if user already exists
         const userExists = await User.findOne({ email });
@@ -23,7 +23,8 @@ router.post('/register', async (req, res) => {
             email,
             password: hashedPassword,
             dob,
-            fullName
+            fullName,
+            leetcodeProfile
         });
 
         await user.save();
@@ -31,8 +32,8 @@ router.post('/register', async (req, res) => {
         // Create JWT token
         const token = jwt.sign(
             { id: user._id },
-            process.env.JWT_SECRET || 'your-secret-key',
-            { expiresIn: '1d' }
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRES_IN }
         );
 
         res.status(201).json({
@@ -40,10 +41,15 @@ router.post('/register', async (req, res) => {
             user: {
                 id: user._id,
                 email: user.email,
-                fullName: user.fullName
+                fullName: user.fullName,
+                leetcodeProfile: user.leetcodeProfile
             }
         });
     } catch (error) {
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
+            return res.status(400).json({ message: 'Email already registered' });
+        }
+        console.error('Register error:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
@@ -68,8 +74,8 @@ router.post('/login', async (req, res) => {
         // Create JWT token
         const token = jwt.sign(
             { id: user._id },
-            process.env.JWT_SECRET || 'your-secret-key',
-            { expiresIn: '1d' }
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRES_IN }
         );
 
         res.json({

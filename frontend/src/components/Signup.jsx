@@ -7,7 +7,8 @@ const Signup = () => {
     email: '',
     password: '',
     dob: '',
-    fullName: ''
+    fullName: '',
+    leetcodeProfile: ''
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const Signup = () => {
       const response = await axios.post('http://localhost:5000/api/auth/register', formData);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       setError(error.response?.data?.message || 'An error occurred');
     }
@@ -89,6 +90,22 @@ const Signup = () => {
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               value={formData.dob}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="leetcodeProfile" className="block text-sm font-medium text-gray-700 mb-1">
+              LeetCode Username
+            </label>
+            <input
+              id="leetcodeProfile"
+              name="leetcodeProfile"
+              type="text"
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="Enter your LeetCode username"
+              value={formData.leetcodeProfile}
               onChange={handleChange}
             />
           </div>
