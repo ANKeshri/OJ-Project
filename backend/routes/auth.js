@@ -1,7 +1,10 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Register Route
 router.post('/register', async (req, res) => {
@@ -88,6 +91,62 @@ router.post('/login', async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+// Google Auth Route
+router.post('/google', async (req, res) => {
+    try {
+        const { token } = req.body;
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const { name, email, sub } = ticket.getPayload();
+
+        let user = await User.findOne({ email });
+
+        if (user) {
+            // User exists, if they don't have a googleId, link it
+            if (!user.googleId) {
+                user.googleId = sub;
+                await user.save();
+            }
+        } else {
+            // User doesn't exist, create a new one
+            // For DOB and LeetCode, you might want a separate step for the user to enter them.
+            user = new User({
+                googleId: sub,
+                email,
+                fullName: name,
+                // These fields are required in your schema, but not provided by Google.
+                // Setting a default/placeholder. The user should update this later.
+                dob: new Date(), // Placeholder DOB
+                leetcodeProfile: '' // Placeholder
+            });
+            await user.save();
+        }
+
+        // Create JWT token for the user
+        const jwtToken = jwt.sign(
+            { id: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRES_IN }
+        );
+
+        res.status(200).json({
+            token: jwtToken,
+            user: {
+                id: user._id,
+                email: user.email,
+                fullName: user.fullName,
+                leetcodeProfile: user.leetcodeProfile
+            },
+        });
+
+    } catch (error) {
+        console.error('Google Auth Error:', error);
+        res.status(400).json({ message: 'Google authentication failed' });
     }
 });
 

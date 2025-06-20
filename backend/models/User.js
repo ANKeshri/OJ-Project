@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: false
     },
     dob: {
         type: Date,
@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema({
     leetcodeProfile: {
         type: String,
         required: false
+    },
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true
     }
 }, {
     timestamps: true

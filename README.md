@@ -36,14 +36,8 @@ cd backend
 npm install express mongoose bcryptjs jsonwebtoken cors dotenv
 ```
 
-3. Create a `.env` file in the backend directory with the following content:
-```
-MONGODB_URI=mongodb://localhost:27017/oj_project
-JWT_SECRET=your_jwt_secret_key_here
-PORT=5000
-```
 
-4. Start the backend server:
+3. Start the backend server:
 ```bash
 npm start
 ```
@@ -65,10 +59,6 @@ npm install
 npm start
 ```
 
-## Accessing the Application
-
-- Backend API: http://localhost:5000
-- Frontend Application: http://localhost:3000
 
 ## Features
 

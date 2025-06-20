@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { GoogleLogin } from '@react-oauth/google';
 
 
 const Login = () => {
@@ -21,11 +22,12 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', formData);
-      localStorage.setItem('token', response.data.token);
+  const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/register`, formData);      localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       navigate('/');
-    } catch (error) {
+    } 
+    catch (error) {
+      console.error(error);
       setError(error.response?.data?.message || 'An error occurred');
     }
   };
@@ -84,6 +86,30 @@ const Login = () => {
             Sign In
           </button>
         </form>
+
+        {/* Google Login Button */}
+        <div className="mt-4 flex flex-col items-center">
+          <GoogleLogin
+            onSuccess={async (credentialResponse) => {
+              try {
+                const res = await axios.post(
+                  `${import.meta.env.VITE_BACKEND_URL}/api/auth/google`,
+                  { token: credentialResponse.credential }
+                );
+                localStorage.setItem('token', res.data.token);
+                localStorage.setItem('user', JSON.stringify(res.data.user));
+                navigate('/');
+              } catch (err) {
+                setError('Google login failed');
+              }
+            }}
+            onError={() => {
+              setError('Google login failed');
+            }}
+            useOneTap
+          />
+          <span className="text-gray-500 text-sm mt-2">or</span>
+        </div>
 
         <div className="mt-6 text-center">
           <p className="text-gray-600">
