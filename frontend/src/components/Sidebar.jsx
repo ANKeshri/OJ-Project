@@ -7,7 +7,7 @@ const Sidebar = () => (
     <a href="/profile" className="hover:text-accentblue transition">Profile</a>
       <a href="#" className="hover:text-accentblue transition">Contests</a>
       <a href="#" className="hover:text-accentblue transition">Practice</a>
-      <a href="#" className="hover:text-accentblue transition">Code Editor</a>
+      <a href="/problems" className="hover:text-accentblue transition">Code Editor</a>
       <a href="#" className="hover:text-accentblue transition">Leaderboard</a>
     </nav>
   </aside>
