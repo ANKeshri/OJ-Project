@@ -22,7 +22,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-  const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/register`, formData);      localStorage.setItem('token', response.data.token);
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, formData);
+      localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       navigate('/');
     } 
