@@ -45,10 +45,16 @@ const ProblemEditor = () => {
       const res = await fetch('http://localhost:3001/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ language, code })
+        body: JSON.stringify({ language, code, input })
       });
       const data = await res.json();
-      setOutput(`Language: ${data.language}\nCode: ${data.code}`);
+      if (data.output) {
+        setOutput(data.output);
+      } else if (data.error) {
+        setOutput(data.error.toString());
+      } else {
+        setOutput('No output');
+      }
     } catch (err) {
       setOutput('Error running code');
     }

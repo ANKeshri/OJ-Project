@@ -1,3 +1,8 @@
+node_modules
+codes
+outputs
+.env
+
 # Logs
 logs
 *.log
@@ -19,7 +24,7 @@ dist-ssr
 .idea
 .DS_Store
 *.suo
-*.ntvs*
+.ntvs
 *.njsproj
 *.sln
 *.sw?

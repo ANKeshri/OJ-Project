@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import ProfilePage from './pages/ProfilePage';
 import Problems from './pages/Problems';
 import ProblemEditor from './pages/ProblemEditor';
+import Compiler from './pages/Compiler';
 import './App.css'
 
 function App() {
@@ -45,6 +46,17 @@ function App() {
               <Topbar />
               <main className="flex-1 overflow-y-auto">
                 <ProblemEditor />
+              </main>
+            </div>
+          </div>
+        } />
+        <Route path="/compiler" element={
+          <div className="flex h-screen w-screen bg-background dark:bg-background">
+            <Sidebar />
+            <div className="flex-1 flex flex-col">
+              <Topbar />
+              <main className="flex-1 overflow-y-auto">
+                <Compiler />
               </main>
             </div>
           </div>

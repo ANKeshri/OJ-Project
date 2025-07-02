@@ -1,8 +1,7 @@
-import { exec } from "child_process";
-import fs from "fs";
-import path from "path";
+const { spawn } = require("child_process");
+const fs = require("fs");
+const path = require("path");
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const outputPath = path.join(__dirname, "outputs");
 
 if (!fs.existsSync(outputPath)) {
@@ -18,28 +17,64 @@ if (!fs.existsSync(outputPath)) {
  * 3. For Java, compiles and runs the class.
  */
 
-export const executeCode = (filepath, language) => {
+const executeCpp = (filepath, language = "cpp", input = "") => {
     const jobId = path.basename(filepath).split(".")[0];
-    let command;
+    let compileCommand, runCommand, runArgs, runCwd;
 
     if (language === "cpp") {
         const outPath = path.join(outputPath, `${jobId}.exe`);
-        command = `g++ "${filepath}" -o "${outPath}" && cd "${outputPath}" && .\\${jobId}.exe`;
+        compileCommand = `g++ "${filepath}" -o "${outPath}"`;
+        runCommand = outPath;
+        runArgs = [];
+        runCwd = outputPath;
     } else if (language === "python") {
-        command = `python "${filepath}"`;
+        compileCommand = null;
+        runCommand = "python";
+        runArgs = [filepath];
+        runCwd = undefined;
     } else if (language === "java") {
         const dir = path.dirname(filepath);
         const filename = path.basename(filepath, ".java");
-        command = `javac "${filepath}" && cd "${dir}" && java ${filename}`;
+        compileCommand = `javac "${filepath}"`;
+        runCommand = "java";
+        runArgs = [filename];
+        runCwd = dir;
     } else {
         throw new Error("Unsupported language");
     }
 
     return new Promise((resolve, reject) => {
-        exec(command, (error, stdout, stderr) => {
-            if (error) return reject({ error, stderr });
-            if (stderr) return reject(stderr);
-            resolve(stdout);
-        });
+        const run = () => {
+            const proc = spawn(runCommand, runArgs, { cwd: runCwd });
+            let stdout = "";
+            let stderr = "";
+            if (input && input.length > 0) {
+                // Ensure input ends with a newline
+                proc.stdin.write(input.endsWith('\n') ? input : input + '\n');
+            }
+            proc.stdin.end();
+            proc.stdout.on("data", data => { stdout += data; });
+            proc.stderr.on("data", data => { stderr += data; });
+            proc.on("close", code => {
+                if (code !== 0) return reject(stderr || `Process exited with code ${code}`);
+                resolve(stdout);
+            });
+            proc.on("error", err => reject(err));
+        };
+        if (compileCommand) {
+            // Compile first
+            const compileProc = spawn(compileCommand, { shell: true });
+            let compileErr = "";
+            compileProc.stderr.on("data", data => { compileErr += data; });
+            compileProc.on("close", code => {
+                if (code !== 0) return reject(compileErr || `Compilation failed with code ${code}`);
+                run();
+            });
+            compileProc.on("error", err => reject(err));
+        } else {
+            run();
+        }
     });
 };
+
+module.exports = { executeCpp };
