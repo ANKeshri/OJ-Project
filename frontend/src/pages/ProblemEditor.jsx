@@ -39,6 +39,21 @@ const ProblemEditor = () => {
     setCode(defaultCode[language]);
   }, [language]);
 
+  const handleRun = async () => {
+    setOutput('Running...');
+    try {
+      const res = await fetch('http://localhost:3001/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ language, code })
+      });
+      const data = await res.json();
+      setOutput(`Language: ${data.language}\nCode: ${data.code}`);
+    } catch (err) {
+      setOutput('Error running code');
+    }
+  };
+
   if (!problem) return <div className="p-8">Loading...</div>;
 
   return (
@@ -132,7 +147,7 @@ const ProblemEditor = () => {
             </div>
           </div>
           <div className="flex gap-4 mt-2">
-            <button className="bg-accentblue text-white px-6 py-2 rounded font-semibold shadow hover:bg-accentblue/80 transition-colors" disabled>Run</button>
+            <button className="bg-accentblue text-white px-6 py-2 rounded font-semibold shadow hover:bg-accentblue/80 transition-colors" onClick={handleRun}>Run</button>
             <button className="bg-green-600 text-white px-6 py-2 rounded font-semibold shadow hover:bg-green-700 transition-colors" disabled>Submit</button>
           </div>
         </div>
