@@ -37,6 +37,8 @@ const ProblemEditor = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
   const [toastType, setToastType] = useState('success'); // 'success' or 'error'
+  const [aiAnalysis, setAiAnalysis] = useState('');
+  const [isAnalysing, setIsAnalysing] = useState(false);
 
   useEffect(() => {
     fetch(`/api/problems/${id}`)
@@ -114,6 +116,23 @@ const ProblemEditor = () => {
       setShowToast(true);
     }
     setIsSubmitting(false);
+  };
+
+  const handleAnalyseWithAI = async () => {
+    setIsAnalysing(true);
+    setAiAnalysis('');
+    try {
+      const res = await fetch('/api/ai/analyse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, prompt: problem.description })
+      });
+      const data = await res.json();
+      setAiAnalysis(data.analysis || 'No analysis received.');
+    } catch (err) {
+      setAiAnalysis('Error analysing code.');
+    }
+    setIsAnalysing(false);
   };
 
   // Toast auto-hide
@@ -214,7 +233,16 @@ const ProblemEditor = () => {
                   <button className="bg-green-600 text-white px-6 py-2 rounded font-semibold shadow hover:bg-green-700 transition-colors flex items-center justify-center min-w-[100px]" onClick={handleSubmit} disabled={isSubmitting}>
                     {isSubmitting ? <span className="loader mr-2"></span> : null}{isSubmitting ? 'Submitting...' : 'Submit'}
                   </button>
+                  <button className="bg-purple-600 text-white px-6 py-2 rounded font-semibold shadow hover:bg-purple-700 transition-colors flex items-center justify-center min-w-[140px]" onClick={handleAnalyseWithAI} disabled={isAnalysing}>
+                    {isAnalysing ? 'Analysing...' : 'Analyse with AI'}
+                  </button>
                 </div>
+                {aiAnalysis && (
+                  <div className="mt-4 p-4 bg-navy-dark text-white rounded border border-purple-600 whitespace-pre-line">
+                    <strong>AI Analysis:</strong>
+                    <div>{aiAnalysis}</div>
+                  </div>
+                )}
               </>
             )}
             {editorTab === 'testcase' && (

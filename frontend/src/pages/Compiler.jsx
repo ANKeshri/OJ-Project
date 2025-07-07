@@ -18,6 +18,8 @@ const Compiler = () => {
   const [output, setOutput] = useState('');
   const [isRunning, setIsRunning] = useState(false);
   const [input, setInput] = useState('');
+  const [aiAnalysis, setAiAnalysis] = useState('');
+  const [isAnalysing, setIsAnalysing] = useState(false);
 
   const handleRun = async () => {
     setIsRunning(true);
@@ -40,6 +42,23 @@ const Compiler = () => {
       setOutput('Error running code');
     }
     setIsRunning(false);
+  };
+
+  const handleAnalyseWithAI = async () => {
+    setIsAnalysing(true);
+    setAiAnalysis('');
+    try {
+      const res = await fetch('/api/ai/analyse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+      const data = await res.json();
+      setAiAnalysis(data.analysis || 'No analysis received.');
+    } catch (err) {
+      setAiAnalysis('Error analysing code.');
+    }
+    setIsAnalysing(false);
   };
 
   return (
@@ -85,6 +104,19 @@ const Compiler = () => {
       >
         {isRunning ? 'Running...' : 'Run'}
       </button>
+      <button
+        className="bg-purple-600 text-white px-6 py-2 rounded font-semibold shadow hover:bg-purple-700 transition-colors w-48 mt-2"
+        onClick={handleAnalyseWithAI}
+        disabled={isAnalysing}
+      >
+        {isAnalysing ? 'Analysing...' : 'Analyse with AI'}
+      </button>
+      {aiAnalysis && (
+        <div className="mt-4 p-4 bg-navy-dark text-white rounded border border-purple-600 whitespace-pre-line">
+          <strong>AI Analysis:</strong>
+          <div>{aiAnalysis}</div>
+        </div>
+      )}
     </div>
   );
 };
