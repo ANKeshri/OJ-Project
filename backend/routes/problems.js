@@ -3,7 +3,7 @@ const Problem = require('../models/Problem');
 const axios = require('axios');
 
 // Set the compiler URL to port 8000 to match your running service
-const COMPILER_URL = process.env.COMPILER_URL || 'http://localhost:8000/run';
+const COMPILER_URL = process.env.COMPILER_URL;
 
 // Get all problems
 router.get('/', async (req, res) => {
