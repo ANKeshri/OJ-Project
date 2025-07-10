@@ -25,7 +25,7 @@ const Compiler = () => {
     setIsRunning(true);
     setOutput('Running...');
     try {
-      const res = await fetch('http://localhost:8000/run', {
+      const res = await fetch(`${import.meta.env.VITE_COMPILER_URL}run`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ language, code, input })
