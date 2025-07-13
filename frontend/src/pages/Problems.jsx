@@ -4,15 +4,17 @@ import { useNavigate } from 'react-router-dom';
 const badgeColors = {
   notAttempted: 'bg-gray-700 text-gray-200',
 };
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 const Problems = () => {
   const [problems, setProblems] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('/api/problems')
-      .then(res => res.json())
-      .then(setProblems);
+    fetch(`${API_BASE_URL}/api/problems`)
+  .then(res => res.json())
+  .then(setProblems);
   }, []);
 
   return (
