@@ -6,6 +6,8 @@ const languages = [
   { label: 'Java', value: 'java' },
   { label: 'Python', value: 'python' },
 ];
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 const defaultCode = {
   cpp: '#include <iostream>\nusing namespace std;\n\nint main() {\n    // your code goes here\n    return 0;\n}',
@@ -41,10 +43,10 @@ const ProblemEditor = () => {
   const [isAnalysing, setIsAnalysing] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/problems/${id}`)
+    fetch(`${API_BASE_URL}/api/problems/${id}`)
       .then(res => res.json())
       .then(setProblem);
-    fetch(`/api/problems/${id}/testcases`)
+    fetch(`${API_BASE_URL}/api/problems/${id}/testcases`)
       .then(res => res.json())
       .then(setSampleTestCases);
   }, [id]);
@@ -57,7 +59,7 @@ const ProblemEditor = () => {
     setIsRunning(true);
     setTestResults([]);
     try {
-      const res = await fetch(`/api/problems/${id}/run`, {
+      const res = await fetch(`${API_BASE_URL}/api/problems/${id}/run`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ language, code })
@@ -89,7 +91,7 @@ const ProblemEditor = () => {
     setSubmitResults([]);
     setAllPassed(null);
     try {
-      const res = await fetch(`/api/problems/${id}/submit`, {
+      const res = await fetch(`${API_BASE_URL}/api/problems/${id}/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ language, code })
@@ -122,7 +124,7 @@ const ProblemEditor = () => {
     setIsAnalysing(true);
     setAiAnalysis('');
     try {
-      const res = await fetch('/api/ai/analyse', {
+      const res = await fetch(`${API_BASE_URL}/api/ai/analyse`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, prompt: problem.description })
