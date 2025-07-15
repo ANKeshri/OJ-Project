@@ -41,6 +41,18 @@ const ProblemEditor = () => {
   const [toastType, setToastType] = useState('success'); // 'success' or 'error'
   const [aiAnalysis, setAiAnalysis] = useState('');
   const [isAnalysing, setIsAnalysing] = useState(false);
+  const [status, setStatus] = useState('Not Attempted'); // NEW STATE
+  const [user, setUser] = useState(null); // NEW STATE
+  const [statusLoading, setStatusLoading] = useState(true); // NEW STATE
+
+  useEffect(() => {
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      setUser(JSON.parse(stored));
+    } else {
+      setUser(null);
+    }
+  }, []);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/problems/${id}`)
@@ -50,6 +62,28 @@ const ProblemEditor = () => {
       .then(res => res.json())
       .then(setSampleTestCases);
   }, [id]);
+
+  // Fetch persistent submission status for this user and problem
+  useEffect(() => {
+    if (!user) {
+      setStatus('Not Attempted');
+      setStatusLoading(false);
+      return;
+    }
+    setStatusLoading(true);
+    fetch(`${API_BASE_URL}/api/problems/${id}/status`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+      .then(res => res.json())
+      .then(data => {
+        setStatus(data.status || 'Not Attempted');
+        setStatusLoading(false);
+      })
+      .catch(() => {
+        setStatus('Not Attempted');
+        setStatusLoading(false);
+      });
+  }, [id, user]);
 
   useEffect(() => {
     setCode(defaultCode[language]);
@@ -93,7 +127,7 @@ const ProblemEditor = () => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/problems/${id}/submit`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ language, code })
       });
       const data = await res.json();
@@ -104,6 +138,7 @@ const ProblemEditor = () => {
         setToastMsg('All test cases passed! Submitted successfully.');
         setToastType('success');
         setShowToast(true);
+        setStatus('Submitted'); // UPDATE STATUS
       } else {
         setToastMsg('Some test cases failed. Not submitted.');
         setToastType('error');
@@ -170,8 +205,10 @@ const ProblemEditor = () => {
               <h2 className="text-3xl font-bold text-white">{problem.title}</h2>
               {/* Difficulty badge (placeholder: Medium) */}
               <span className="bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full">Medium</span>
-              {/* Status badge (placeholder: Not Attempted) */}
-              <span className="ml-2 bg-gray-700 text-gray-200 text-xs font-semibold px-3 py-1 rounded-full">Not Attempted</span>
+              {/* Status badge (dynamic) */}
+              <span className={`ml-2 ${status === 'Submitted' ? 'bg-green-700 text-green-200' : 'bg-gray-700 text-gray-200'} text-xs font-semibold px-3 py-1 rounded-full`}>
+                {status}
+              </span>
             </div>
             {/* Tags (placeholder) */}
             <div className="flex gap-2 mb-4">
@@ -227,15 +264,19 @@ const ProblemEditor = () => {
                   className="w-full h-64 bg-navy-dark text-green-200 p-4 rounded font-mono resize-none text-base border border-navy-dark focus:outline-none focus:ring-2 focus:ring-accentblue"
                   value={code}
                   onChange={e => setCode(e.target.value)}
+                  disabled={!user}
                 />
+                {!user && (
+                  <div className="text-red-400 font-semibold mt-2">Please log in to write and submit code.</div>
+                )}
                 <div className="flex gap-4 mt-2">
-                  <button className="bg-accentblue text-white px-6 py-2 rounded font-semibold shadow hover:bg-accentblue/80 transition-colors flex items-center justify-center min-w-[100px]" onClick={handleRunAll} disabled={isRunning}>
+                  <button className="bg-accentblue text-white px-6 py-2 rounded font-semibold shadow hover:bg-accentblue/80 transition-colors flex items-center justify-center min-w-[100px]" onClick={handleRunAll} disabled={isRunning || !user}>
                     {isRunning ? <span className="loader mr-2"></span> : null}{isRunning ? 'Running...' : 'Run'}
                   </button>
-                  <button className="bg-green-600 text-white px-6 py-2 rounded font-semibold shadow hover:bg-green-700 transition-colors flex items-center justify-center min-w-[100px]" onClick={handleSubmit} disabled={isSubmitting}>
+                  <button className="bg-green-600 text-white px-6 py-2 rounded font-semibold shadow hover:bg-green-700 transition-colors flex items-center justify-center min-w-[100px]" onClick={handleSubmit} disabled={isSubmitting || !user}>
                     {isSubmitting ? <span className="loader mr-2"></span> : null}{isSubmitting ? 'Submitting...' : 'Submit'}
                   </button>
-                  <button className="bg-purple-600 text-white px-6 py-2 rounded font-semibold shadow hover:bg-purple-700 transition-colors flex items-center justify-center min-w-[140px]" onClick={handleAnalyseWithAI} disabled={isAnalysing}>
+                  <button className="bg-purple-600 text-white px-6 py-2 rounded font-semibold shadow hover:bg-purple-700 transition-colors flex items-center justify-center min-w-[140px]" onClick={handleAnalyseWithAI} disabled={isAnalysing || !user}>
                     {isAnalysing ? 'Analysing...' : 'Analyse with AI'}
                   </button>
                 </div>

@@ -32,11 +32,26 @@ const LeetCodeCard = ({ leetcodeProfile }) => {
   useEffect(() => {
     if (!leetcodeProfile) return;
     setLoading(true);
-    fetch(`https://leetcode-stats-api.herokuapp.com/${leetcodeProfile}`)
+    fetch(`https://alfa-leetcode-api.onrender.com/userProfile/${leetcodeProfile}`)
       .then(res => res.json())
       .then(data => {
-        if (data.status === 'success') {
-          setStats(data);
+        // The new API returns stats in submitStatsGlobal.acSubmissionNum
+        if (data && data.submitStatsGlobal && data.submitStatsGlobal.acSubmissionNum) {
+          const ac = data.submitStatsGlobal.acSubmissionNum;
+          const getCount = (difficulty) => {
+            const found = ac.find(x => x.difficulty === difficulty);
+            return found ? found.count : 0;
+          };
+          setStats({
+            totalSolved: getCount('All'),
+            totalQuestions: getCount('All'), // The API does not provide total available, so use solved as total for now
+            easySolved: getCount('Easy'),
+            mediumSolved: getCount('Medium'),
+            hardSolved: getCount('Hard'),
+            totalEasy: getCount('Easy'),
+            totalMedium: getCount('Medium'),
+            totalHard: getCount('Hard'),
+          });
           setError('');
         } else {
           setError('Could not fetch LeetCode stats.');
@@ -67,8 +82,8 @@ const LeetCodeCard = ({ leetcodeProfile }) => {
   const hardStart = mediumEnd + gap;
   const hardEnd = hardStart + hardAngle - gap / 2;
 
-  // Attempting count
-  const attempting = stats.totalQuestions - stats.totalSolved;
+  // Attempting count (not available in new API, so set to 0)
+  const attempting = 0;
 
   return (
     <div className="bg-[#232323] rounded-2xl p-4 md:p-6 w-full max-w-lg flex flex-col md:flex-row items-center gap-6 shadow-lg" style={{background:'#232323'}}>
