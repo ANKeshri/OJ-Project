@@ -10,7 +10,7 @@ function permutationWarmUpReference(n) {
 }
 function generatePermutationWarmUpHiddenCases() {
   const cases = [];
-  for (let i = 1; i <= 50; i++) {
+  for (let i = 1; i <= 5; i++) { // Reduced from 50 to 5
     const n = 1 + (i % 8); // n in [1,8]
     cases.push({
       input: `${n}`,
@@ -27,7 +27,7 @@ function trippiTroppiReference(input) {
 }
 function generateTrippiTroppiHiddenCases() {
   const cases = [];
-  for (let i = 1; i <= 50; i++) {
+  for (let i = 1; i <= 5; i++) { // Reduced from 50 to 5
     const str = String.fromCharCode(65 + (i % 26)) + String.fromCharCode(66 + (i % 26)) + String.fromCharCode(67 + (i % 26));
     cases.push({
       input: str,
@@ -48,7 +48,7 @@ function cherryBombReference(n, a, b) {
 }
 function generateCherryBombHiddenCases() {
   const cases = [];
-  for (let i = 1; i <= 50; i++) {
+  for (let i = 1; i <= 5; i++) { // Reduced from 50 to 5
     const n = 2 + (i % 10); // n in [2,11]
     const a = Array.from({ length: n }, () => Math.floor(Math.random() * 100));
     const b = Array.from({ length: n }, () => Math.floor(Math.random() * 100));
@@ -71,7 +71,7 @@ function sumOfTwoNumbersReference(a, b) {
 }
 function generateSumOfTwoNumbersHiddenCases() {
   const cases = [];
-  for (let i = 1; i <= 50; i++) {
+  for (let i = 1; i <= 5; i++) { // Reduced from 50 to 5
     const a = Math.floor(Math.random() * 1000);
     const b = Math.floor(Math.random() * 1000);
     cases.push({
@@ -88,7 +88,7 @@ function reverseStringReference(s) {
 }
 function generateReverseStringHiddenCases() {
   const cases = [];
-  for (let i = 1; i <= 50; i++) {
+  for (let i = 1; i <= 5; i++) { // Reduced from 50 to 5
     const s = Math.random().toString(36).substring(2, 2 + (i % 10) + 1);
     cases.push({
       input: s,
