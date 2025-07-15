@@ -201,38 +201,47 @@ const ProblemEditor = () => {
           </div>
           {/* Problem Content */}
           <div className="px-8 py-6">
-            <div className="flex items-center gap-4 mb-2">
-              <h2 className="text-3xl font-bold text-white">{problem.title}</h2>
-              {/* Difficulty badge (placeholder: Medium) */}
-              <span className="bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full">Medium</span>
-              {/* Status badge (dynamic) */}
-              <span className={`ml-2 ${status === 'Submitted' ? 'bg-green-700 text-green-200' : 'bg-gray-700 text-gray-200'} text-xs font-semibold px-3 py-1 rounded-full`}>
-                {status}
-              </span>
-            </div>
-            {/* Tags (placeholder) */}
-            <div className="flex gap-2 mb-4">
-              <span className="bg-yellow-900/60 text-yellow-300 text-xs px-2 py-1 rounded">Topics</span>
-              <span className="bg-yellow-900/60 text-yellow-300 text-xs px-2 py-1 rounded">Companies</span>
-            </div>
-            <div className="text-gray-200 text-base mb-6 whitespace-pre-line">
-              {problem.description}
-            </div>
-            <div className="mb-6">
-              <span className="font-semibold text-white">Constraints:</span>
-              <div className="text-gray-300 text-sm mt-1">{problem.constraints}</div>
-            </div>
-            {/* Examples (from sampleTestCases) */}
-            <div className="mb-6">
-              <span className="font-semibold text-white">Examples:</span>
-              {sampleTestCases.map((s, i) => (
-                <div key={i} className="bg-navy-dark/80 rounded-lg p-4 my-2">
-                  <div className="text-gray-400 text-xs mb-1">Input:</div>
-                  <pre className="bg-navy-dark text-white rounded px-2 py-1 mb-2 whitespace-pre-wrap">{s.input}</pre>
-                  <div className="text-gray-400 text-xs mb-1">Output:</div>
-                  <pre className="bg-navy-dark text-white rounded px-2 py-1 whitespace-pre-wrap">{s.output}</pre>
-                </div>
-              ))}
+            <div className="rounded-2xl shadow-xl border-l-4 border-blue-500 bg-gradient-to-br from-navy via-navy-dark to-navy/80 p-6 mb-6">
+              <div className="flex items-center gap-4 mb-2">
+                <h2 className="text-3xl font-bold text-white">{problem.title}</h2>
+                {/* Difficulty badge */}
+                <span className={`text-xs font-bold px-3 py-1 rounded-full capitalize ${
+                  (problem.difficulty || 'Medium').toLowerCase() === 'easy' ? 'bg-green-600 text-white' :
+                  (problem.difficulty || 'Medium').toLowerCase() === 'hard' ? 'bg-red-600 text-white' :
+                  'bg-yellow-500 text-white'
+                }`}>
+                  {problem.difficulty || 'Medium'}
+                </span>
+                {/* Status badge */}
+                <span className={`ml-2 ${status === 'Submitted' ? 'bg-green-700 text-green-200' : 'bg-gray-700 text-gray-200'} text-xs font-semibold px-3 py-1 rounded-full`}>
+                  {status}
+                </span>
+              </div>
+              {/* Tags */}
+              <div className="flex gap-2 mb-4 flex-wrap">
+                {(problem.tags || []).map((tag, idx) => (
+                  <span key={idx} className="bg-blue-900/60 text-blue-300 text-xs px-2 py-1 rounded">{tag}</span>
+                ))}
+              </div>
+              <div className="text-gray-200 text-base mb-6 whitespace-pre-line">
+                {problem.description}
+              </div>
+              <div className="mb-6">
+                <span className="font-semibold text-white">Constraints:</span>
+                <div className="text-gray-300 text-sm mt-1">{problem.constraints}</div>
+              </div>
+              {/* Examples (from sampleTestCases) */}
+              <div className="mb-6">
+                <span className="font-semibold text-white">Examples:</span>
+                {sampleTestCases.map((s, i) => (
+                  <div key={i} className="bg-navy-dark/80 rounded-lg p-4 my-2">
+                    <div className="text-gray-400 text-xs mb-1">Input:</div>
+                    <pre className="bg-navy-dark text-white rounded px-2 py-1 mb-2 whitespace-pre-wrap">{s.input}</pre>
+                    <div className="text-gray-400 text-xs mb-1">Output:</div>
+                    <pre className="bg-navy-dark text-white rounded px-2 py-1 whitespace-pre-wrap">{s.output}</pre>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

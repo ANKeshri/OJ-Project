@@ -50,33 +50,50 @@ const Problems = () => {
   return (
     <div className="flex flex-col items-center w-full min-h-screen bg-background dark:bg-background py-12 px-2">
       <h1 className="text-4xl font-extrabold mb-12 text-center text-white tracking-tight drop-shadow">Practice Questions</h1>
-      <div className="w-full max-w-3xl flex flex-col gap-8">
-        {problems.slice(0, 5).map(problem => {
-          const status = statuses[problem._id] || 'Not Attempted';
+      <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {problems.slice(0, 6).map(problem => {
+          const status = statuses[problem._id] || 'Unsolved';
+          const isSubmitted = status === 'Submitted';
+          const difficulty = (problem.difficulty || 'Medium').toLowerCase();
           return (
             <div
               key={problem._id}
-              className="relative group bg-gradient-to-br from-navy via-navy-dark to-navy rounded-2xl shadow-xl border-l-8 border-accentblue p-8 cursor-pointer transition-transform hover:scale-[1.025] hover:shadow-2xl"
-              onClick={() => navigate(`/problems/${problem._id}`)}
+              className="relative flex flex-col justify-between h-64 bg-navy-dark rounded-2xl shadow-xl p-7 transition-transform hover:scale-[1.02] hover:shadow-2xl"
             >
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-2xl font-bold text-white group-hover:text-accentblue transition-colors">
+              {/* Title and Difficulty */}
+              <div className="flex items-start justify-between mb-4">
+                <h2 className="text-xl font-bold text-white leading-tight">
                   {problem.title}
                 </h2>
-                <span className={`ml-4 px-4 py-1 rounded-full text-xs font-semibold ${status === 'Submitted' ? badgeColors.submitted : badgeColors.notAttempted} shadow-sm border border-gray-600`}>
-                  {status}
+                <span className={`text-sm font-bold px-4 py-1 rounded-full capitalize absolute top-6 right-7 ${
+                  difficulty === 'easy' ? 'bg-green-500 text-white' :
+                  difficulty === 'hard' ? 'bg-red-600 text-white' :
+                  'bg-yellow-400 text-black'
+                }`}>
+                  {problem.difficulty || 'Medium'}
                 </span>
               </div>
-              <div className="flex flex-wrap gap-2 mb-3">
-                {problem.constraints && (
-                  <span className="bg-accentblue/20 text-accentblue px-3 py-1 rounded-full text-xs font-medium">
-                    {problem.constraints}
-                  </span>
-                )}
+              {/* Tags */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                {(problem.tags || []).map((tag, idx) => (
+                  <span key={idx} className="bg-gray-700 text-gray-200 text-xs px-3 py-1 rounded-full font-medium">#{tag}</span>
+                ))}
               </div>
-              <p className="text-gray-300 text-base line-clamp-2">
-                {problem.description}
-              </p>
+              {/* Status and Solve link at bottom */}
+              <div className="flex items-end justify-between flex-1">
+                <div className="flex items-center gap-2">
+                  <span className={isSubmitted ? "text-green-400 text-lg" : "text-red-400 text-lg"}>●</span>
+                  <span className={isSubmitted ? "text-green-400 font-semibold text-base" : "text-red-400 font-semibold text-base"}>
+                    {isSubmitted ? 'Submitted' : 'Unsolved'}
+                  </span>
+                </div>
+                <button
+                  className="text-accentblue font-semibold text-base hover:underline focus:outline-none"
+                  onClick={() => navigate(`/problems/${problem._id}`)}
+                >
+                  Solve →
+                </button>
+              </div>
             </div>
           );
         })}
