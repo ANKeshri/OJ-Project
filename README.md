@@ -1,6 +1,6 @@
 # 🚀 Online Judge (OJ) Platform
 
-A full-stack, scalable online coding platform inspired by LeetCode/HackerRank, built with the **MERN stack** and a microservices approach. Features real-time code compilation, AI-powered code analysis, problem management, and user authentication.
+A full-stack, scalable online coding platform built with the **MERN stack** and a microservices approach. Features real-time code compilation, AI-powered code analysis, problem management, and user authentication.
 
 ---
 
@@ -23,10 +23,9 @@ OJ_Project/
 - **Real-time Code Execution:** Isolated, secure, Dockerized
 - **Problem Management:** CRUD for coding problems, test cases, constraints
 - **User Authentication:** JWT, Google OAuth
-- **Interactive Code Editor:** Syntax highlighting, language templates
+- **Interactive Code Editor:**  language templates
 - **AI Code Analysis:** Google Gemini 2.0 Flash for time/space complexity
 - **Submission Tracking:** Detailed results, pass/fail feedback
-- **Modern UI/UX:** Responsive, dark mode, toast notifications
 - **Profile & Progress:** User profiles, completion status, LeetCode integration
 - **Security:** JWT, bcrypt, CORS, input validation
 
