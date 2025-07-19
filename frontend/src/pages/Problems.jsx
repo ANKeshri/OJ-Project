@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const badgeColors = {
   notAttempted: 'bg-gray-700 text-gray-200',
@@ -42,8 +43,13 @@ const Problems = () => {
               statusMap[id] = status;
             });
             setStatuses(statusMap);
+          }).catch(() => {
+            toast.error('Failed to fetch problem statuses.');
           });
         }
+      })
+      .catch(() => {
+        toast.error('Failed to fetch problems.');
       });
   }, [user]);
 

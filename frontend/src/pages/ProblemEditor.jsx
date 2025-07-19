@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import Editor from "@monaco-editor/react";
+import { toast } from 'react-toastify';
 
 const languages = [
   { label: 'C++', value: 'cpp' },
@@ -36,9 +38,6 @@ const ProblemEditor = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitResults, setSubmitResults] = useState([]);
   const [allPassed, setAllPassed] = useState(null);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMsg, setToastMsg] = useState('');
-  const [toastType, setToastType] = useState('success'); // 'success' or 'error'
   const [aiAnalysis, setAiAnalysis] = useState('');
   const [isAnalysing, setIsAnalysing] = useState(false);
   const [status, setStatus] = useState('Not Attempted'); // NEW STATE
@@ -102,20 +101,14 @@ const ProblemEditor = () => {
       setTestResults(data.results || []);
       setEditorTab('testresult');
       if (data.results && data.results.length > 0 && data.results.every(r => r.passed)) {
-        setToastMsg('All sample test cases passed!');
-        setToastType('success');
-        setShowToast(true);
+        toast.success('All sample test cases passed!');
       } else if (data.results && data.results.length > 0) {
-        setToastMsg('Some sample test cases failed.');
-        setToastType('error');
-        setShowToast(true);
+        toast.error('Some sample test cases failed.');
       }
     } catch (err) {
       setTestResults([{ error: 'Error running code' }]);
       setEditorTab('testresult');
-      setToastMsg('Error running code');
-      setToastType('error');
-      setShowToast(true);
+      toast.error('Error running code');
     }
     setIsRunning(false);
   };
@@ -135,22 +128,16 @@ const ProblemEditor = () => {
       setAllPassed(data.allPassed);
       setEditorTab('submitresult');
       if (data.allPassed) {
-        setToastMsg('All test cases passed! Submitted successfully.');
-        setToastType('success');
-        setShowToast(true);
-        setStatus('Submitted'); // UPDATE STATUS
+        toast.success('All test cases passed! Submitted successfully.');
+        setStatus('Submitted');
       } else {
-        setToastMsg('Some test cases failed. Not submitted.');
-        setToastType('error');
-        setShowToast(true);
+        toast.error('Some test cases failed. Not submitted.');
       }
     } catch (err) {
       setSubmitResults([{ error: 'Error submitting code' }]);
       setAllPassed(false);
       setEditorTab('submitresult');
-      setToastMsg('Error submitting code');
-      setToastType('error');
-      setShowToast(true);
+      toast.error('Error submitting code');
     }
     setIsSubmitting(false);
   };
@@ -172,26 +159,13 @@ const ProblemEditor = () => {
     setIsAnalysing(false);
   };
 
-  // Toast auto-hide
-  useEffect(() => {
-    if (showToast) {
-      const timer = setTimeout(() => setShowToast(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showToast]);
-
   if (!problem) return <div className="p-8">Loading...</div>;
 
   return (
     <>
-      {showToast && (
-        <div className={`fixed top-6 right-6 z-50 px-6 py-3 rounded shadow-lg font-semibold text-lg transition-all ${toastType === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
-          {toastMsg}
-        </div>
-      )}
-      <div className="flex h-[calc(100vh-64px)] bg-background dark:bg-background">
+      <div className="flex h-[calc(100vh-64px)] bg-background dark:bg-background overflow-hidden">
         {/* Left: Problem Description */}
-        <div className="w-1/2 h-full overflow-y-auto border-r border-navy-dark bg-navy/80 p-0">
+        <div className="w-1/2 h-full overflow-y-auto border-r border-navy-dark bg-navy/80 p-0 custom-scrollbar">
           {/* Tabs */}
           <div className="flex items-center gap-2 px-8 pt-6 pb-2 border-b border-navy-dark bg-navy/90 sticky top-0 z-10">
             <button className={`font-semibold px-3 py-2 rounded-t ${activeTab==='description' ? 'bg-background text-accentblue' : 'text-gray-300 hover:text-accentblue'}`} onClick={()=>setActiveTab('description')}>Description</button>
@@ -246,7 +220,7 @@ const ProblemEditor = () => {
           </div>
         </div>
         {/* Right: Code Editor */}
-        <div className="w-1/2 h-full flex flex-col bg-navy/80">
+        <div className="w-1/2 h-full flex flex-col bg-navy/80 rounded-r-2xl shadow-2xl">
           {/* Editor Tabs */}
           <div className="flex items-center gap-2 px-8 pt-6 pb-2 border-b border-navy-dark bg-navy/90 sticky top-0 z-10">
             <button className={`font-semibold px-3 py-2 rounded-t ${editorTab==='code' ? 'bg-background text-accentblue' : 'text-gray-300 hover:text-accentblue'}`} onClick={()=>setEditorTab('code')}>Code</button>
@@ -269,12 +243,30 @@ const ProblemEditor = () => {
                     ))}
                   </select>
                 </div>
-                <textarea
-                  className="w-full h-64 bg-navy-dark text-green-200 p-4 rounded font-mono resize-none text-base border border-navy-dark focus:outline-none focus:ring-2 focus:ring-accentblue"
-                  value={code}
-                  onChange={e => setCode(e.target.value)}
-                  disabled={!user}
-                />
+                {/* Replace textarea for code input with Monaco Editor */}
+                <div className="w-full h-64 mb-4">
+                  <Editor
+                    height="100%"
+                    width="100%"
+                    theme="vs-dark"
+                    language={language === "cpp" ? "cpp" : language}
+                    value={code}
+                    onChange={value => setCode(value || "")}
+                    options={{
+                      fontSize: 16,
+                      minimap: { enabled: false },
+                      lineNumbers: "on",
+                      scrollBeyondLastLine: false,
+                      automaticLayout: true,
+                      wordWrap: "on",
+                      readOnly: !user,
+                      scrollbar: {
+                        vertical: 'hidden',
+                        horizontal: 'auto',
+                      },
+                    }}
+                  />
+                </div>
                 {!user && (
                   <div className="text-red-400 font-semibold mt-2">Please log in to write and submit code.</div>
                 )}

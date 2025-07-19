@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { GoogleLogin } from '@react-oauth/google';
+import { toast } from 'react-toastify';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -27,14 +28,16 @@ const Signup = () => {
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/register`, formData);
             localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
+      toast.success('Signup successful!');
       navigate('/');
     } catch (error) {
       setError(error.response?.data?.message || 'An error occurred');
+      toast.error(error.response?.data?.message || 'An error occurred');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+    <div className="w-screen h-screen min-h-screen flex items-center justify-center relative overflow-hidden">
       <img src="/background-coding.jpg" alt="background" className="absolute inset-0 w-full h-full object-cover z-0 opacity-60" />
       <div className="absolute inset-0 bg-gradient-to-br from-[#181824]/90 to-[#23232e]/90 z-10" />
       <div className="bg-[#181824] rounded-2xl shadow-2xl p-10 w-full max-w-md flex flex-col items-center z-20">

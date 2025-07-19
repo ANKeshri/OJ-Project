@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import LeetCodeCard from '../components/LeetCodeCard';
 import Sidebar from '../components/Sidebar';
+import { toast } from 'react-toastify';
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 function getInitials(name) {
@@ -68,8 +69,10 @@ const ProfilePage = () => {
       localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
       setShowEdit(false);
+      toast.success('Profile updated successfully!');
     } catch (err) {
       setEditError('Could not update profile.');
+      toast.error('Could not update profile.');
     }
     setEditLoading(false);
   };

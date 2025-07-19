@@ -1,4 +1,7 @@
+
 import React, { useState } from 'react';
+import Editor from "@monaco-editor/react";
+import { toast } from 'react-toastify';
 
 const languages = [
   { label: 'C++', value: 'cpp' },
@@ -33,13 +36,17 @@ const Compiler = () => {
       const data = await res.json();
       if (data.output) {
         setOutput(data.output);
+        toast.success('Code ran successfully!');
       } else if (data.error) {
         setOutput(data.error.toString());
+        toast.error('Error running code');
       } else {
         setOutput('No output');
+        toast.info('No output');
       }
     } catch (err) {
       setOutput('Error running code');
+      toast.error('Error running code');
     }
     setIsRunning(false);
   };
@@ -55,8 +62,10 @@ const Compiler = () => {
       });
       const data = await res.json();
       setAiAnalysis(data.analysis || 'No analysis received.');
+      toast.success('AI analysis complete!');
     } catch (err) {
       setAiAnalysis('Error analysing code.');
+      toast.error('Error analysing code.');
     }
     setIsAnalysing(false);
   };
@@ -78,11 +87,25 @@ const Compiler = () => {
           ))}
         </select>
       </div>
-      <textarea
-        className="w-full h-64 bg-navy-dark text-green-200 p-4 rounded font-mono resize-none text-base border border-navy-dark focus:outline-none focus:ring-2 focus:ring-accentblue mb-4"
-        value={code}
-        onChange={e => setCode(e.target.value)}
-      />
+      {/* Replace textarea for code input with Monaco Editor */}
+      <div className="w-full h-64 mb-4">
+        <Editor
+          height="100%"
+          width="100%"
+          theme="vs-dark"
+          language={language === "cpp" ? "cpp" : language}
+          value={code}
+          onChange={value => setCode(value || "")}
+          options={{
+            fontSize: 16,
+            minimap: { enabled: false },
+            lineNumbers: "on",
+            scrollBeyondLastLine: false,
+            automaticLayout: true,
+            wordWrap: "on",
+          }}
+        />
+      </div>
       <textarea
         className="w-full h-20 bg-navy-dark text-white p-2 rounded border border-navy-dark mb-4"
         placeholder="Custom input (optional)"

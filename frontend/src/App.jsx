@@ -12,7 +12,7 @@ import './App.css'
 
 function App() {
   return (
-    <div className="fixed inset-0 min-h-screen min-w-screen bg-gradient-to-br from-[#181824] to-[#23232e]">
+    <div className="min-h-screen w-full bg-gradient-to-br from-[#181824] to-[#23232e] flex flex-col">
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
