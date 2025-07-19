@@ -48,7 +48,7 @@ const Compiler = () => {
     setIsAnalysing(true);
     setAiAnalysis('');
     try {
-      const res = await fetch('/api/ai/analyse', {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/ai/analyse`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code })
