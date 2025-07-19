@@ -12,57 +12,59 @@ import './App.css'
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/" element={
-          <div className="flex h-screen w-screen bg-background dark:bg-background">
-            <Sidebar />
-            <div className="flex-1 flex flex-col">
-              <Topbar />
-              <main className="flex-1 overflow-y-auto">
-                <Home />
-              </main>
+    <div className="fixed inset-0 min-h-screen min-w-screen bg-gradient-to-br from-[#181824] to-[#23232e]">
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/" element={
+            <div className="flex h-screen w-screen bg-background dark:bg-background">
+              <Sidebar />
+              <div className="flex-1 flex flex-col">
+                <Topbar />
+                <main className="flex-1 overflow-y-auto">
+                  <Home />
+                </main>
+              </div>
             </div>
-          </div>
-        } />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/problems" element={
-          <div className="flex h-screen w-screen bg-background dark:bg-background">
-            <Sidebar />
-            <div className="flex-1 flex flex-col">
-              <Topbar />
-              <main className="flex-1 overflow-y-auto">
-                <Problems />
-              </main>
+          } />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/problems" element={
+            <div className="flex h-screen w-screen bg-background dark:bg-background">
+              <Sidebar />
+              <div className="flex-1 flex flex-col">
+                <Topbar />
+                <main className="flex-1 overflow-y-auto">
+                  <Problems />
+                </main>
+              </div>
             </div>
-          </div>
-        } />
-        <Route path="/problems/:id" element={
-          <div className="flex h-screen w-screen bg-background dark:bg-background">
-            <Sidebar />
-            <div className="flex-1 flex flex-col">
-              <Topbar />
-              <main className="flex-1 overflow-y-auto">
-                <ProblemEditor />
-              </main>
+          } />
+          <Route path="/problems/:id" element={
+            <div className="flex h-screen w-screen bg-background dark:bg-background">
+              <Sidebar />
+              <div className="flex-1 flex flex-col">
+                <Topbar />
+                <main className="flex-1 overflow-y-auto">
+                  <ProblemEditor />
+                </main>
+              </div>
             </div>
-          </div>
-        } />
-        <Route path="/compiler" element={
-          <div className="flex h-screen w-screen bg-background dark:bg-background">
-            <Sidebar />
-            <div className="flex-1 flex flex-col">
-              <Topbar />
-              <main className="flex-1 overflow-y-auto">
-                <Compiler />
-              </main>
+          } />
+          <Route path="/compiler" element={
+            <div className="flex h-screen w-screen bg-background dark:bg-background">
+              <Sidebar />
+              <div className="flex-1 flex flex-col">
+                <Topbar />
+                <main className="flex-1 overflow-y-auto">
+                  <Compiler />
+                </main>
+              </div>
             </div>
-          </div>
-        } />
-      </Routes>
-    </Router>
+          } />
+        </Routes>
+      </Router>
+    </div>
   );
 }
 

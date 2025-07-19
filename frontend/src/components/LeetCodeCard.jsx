@@ -35,22 +35,17 @@ const LeetCodeCard = ({ leetcodeProfile }) => {
     fetch(`https://alfa-leetcode-api.onrender.com/userProfile/${leetcodeProfile}`)
       .then(res => res.json())
       .then(data => {
-        // The new API returns stats in submitStatsGlobal.acSubmissionNum
-        if (data && data.submitStatsGlobal && data.submitStatsGlobal.acSubmissionNum) {
-          const ac = data.submitStatsGlobal.acSubmissionNum;
-          const getCount = (difficulty) => {
-            const found = ac.find(x => x.difficulty === difficulty);
-            return found ? found.count : 0;
-          };
+        // Use the new API response structure
+        if (data && typeof data.totalSolved === 'number') {
           setStats({
-            totalSolved: getCount('All'),
-            totalQuestions: getCount('All'), // The API does not provide total available, so use solved as total for now
-            easySolved: getCount('Easy'),
-            mediumSolved: getCount('Medium'),
-            hardSolved: getCount('Hard'),
-            totalEasy: getCount('Easy'),
-            totalMedium: getCount('Medium'),
-            totalHard: getCount('Hard'),
+            totalSolved: data.totalSolved,
+            totalQuestions: data.totalQuestions,
+            easySolved: data.easySolved,
+            mediumSolved: data.mediumSolved,
+            hardSolved: data.hardSolved,
+            totalEasy: data.totalEasy,
+            totalMedium: data.totalMedium,
+            totalHard: data.totalHard,
           });
           setError('');
         } else {

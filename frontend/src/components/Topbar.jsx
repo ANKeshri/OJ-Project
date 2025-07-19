@@ -17,7 +17,7 @@ const Topbar = () => {
   const handleLogout = () => {
     localStorage.removeItem('user');
     setUser(null);
-    navigate('/profile');
+    navigate('/');
   };
 
   return (

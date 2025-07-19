@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const typingText = 'Welcome to CrazyCoder';
 
 const Home = () => {
   const [typed, setTyped] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     let i = 0;
@@ -27,8 +29,8 @@ const Home = () => {
         Your journey to coding mastery starts here!
       </p>
       <div className="flex gap-4 mb-12">
-        <button className="bg-accentblue hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold shadow">Get Started</button>
-        <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="border border-accentblue text-accentblue px-6 py-2 rounded font-semibold hover:bg-accentblue hover:text-white transition">View on GitHub</a>
+        <button className="bg-accentblue hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold shadow" onClick={() => navigate('/signup')}>Get Started</button>
+        <a href="https://github.com/ANKeshri/OJ-Project" target="_blank" rel="noopener noreferrer" className="border border-accentblue text-accentblue px-6 py-2 rounded font-semibold hover:bg-accentblue hover:text-white transition">View on GitHub</a>
       </div>
       <div className="w-full max-w-3xl bg-navy-dark rounded-lg shadow-lg p-6 mt-4">
         <pre className="text-green-400 text-sm overflow-x-auto">

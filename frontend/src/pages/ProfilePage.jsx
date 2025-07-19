@@ -87,9 +87,18 @@ const ProfilePage = () => {
     );
   }
 
-  // Format date of birth and account creation
-  const dob = user.dob ? new Date(user.dob).toLocaleDateString() : '-';
-  const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-';
+  // Format date of birth and account creation in Indian format (DD/MM/YYYY)
+  function formatDateIndian(dateString) {
+    if (!dateString) return '-';
+    const d = new Date(dateString);
+    if (isNaN(d)) return '-';
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+  const dob = user.dob ? formatDateIndian(user.dob) : '-';
+  const createdAt = user.createdAt ? formatDateIndian(user.createdAt) : '-';
 
   // Calculate OJ progress percent
   const solved = stats?.solved || 0;

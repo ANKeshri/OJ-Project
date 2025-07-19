@@ -99,6 +99,46 @@ function generateReverseStringHiddenCases() {
   return cases;
 }
 
+// Helper for Find the Duplicate Number
+function findDuplicateReference(nums) {
+  // Floyd's Tortoise and Hare (Cycle Detection)
+  let slow = nums[0];
+  let fast = nums[0];
+  do {
+    slow = nums[slow];
+    fast = nums[nums[fast]];
+  } while (slow !== fast);
+  slow = nums[0];
+  while (slow !== fast) {
+    slow = nums[slow];
+    fast = nums[fast];
+  }
+  return slow;
+}
+function generateFindDuplicateHiddenCases() {
+  const cases = [];
+  const testInputs = [
+    // Small
+    [1, 2, 3, 4, 4],
+    // Duplicate at start
+    [2, 2, 3, 4, 5, 1],
+    // Duplicate at end
+    [5, 4, 3, 2, 1, 5],
+    // Larger n
+    [7, 1, 2, 3, 4, 5, 6, 7],
+    // Random
+    [6, 3, 1, 5, 4, 2, 6]
+  ];
+  for (const arr of testInputs) {
+    cases.push({
+      input: arr.join(' '),
+      output: findDuplicateReference(arr),
+      isSample: false
+    });
+  }
+  return cases;
+}
+
 const problems = [
   {
     title: "Permutation Warm-Up",
@@ -158,6 +198,18 @@ const problems = [
       { input: "world", output: "dlrow", isSample: true },
       { input: "openai", output: "ianepo", isSample: true },
       ...generateReverseStringHiddenCases()
+    ]
+  },
+  {
+    title: "Find the Duplicate Number",
+    description: "Given an array of integers nums containing n + 1 integers where each integer is in the range [1, n] inclusive. There is only one repeated number in nums, return this repeated number. You must solve the problem without modifying the array nums and using only constant extra space.",
+    constraints: "1 <= n <= 10^5\nnums.length == n + 1\n1 <= nums[i] <= n\nAll the integers in nums appear only once except for precisely one integer which appears two or more times.",
+    difficulty: "medium",
+    testCases: [
+      { input: "1 3 4 2 2", output: "2", isSample: true },
+      { input: "3 1 3 4 2", output: "3", isSample: true },
+      { input: "3 3 3 3 3", output: "3", isSample: true },
+      ...generateFindDuplicateHiddenCases()
     ]
   }
 ];
