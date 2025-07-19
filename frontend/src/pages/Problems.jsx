@@ -51,7 +51,7 @@ const Problems = () => {
     <div className="flex flex-col items-center w-full min-h-screen bg-background dark:bg-background py-12 px-2">
       <h1 className="text-4xl font-extrabold mb-12 text-center text-white tracking-tight drop-shadow">Practice Questions</h1>
       <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {problems.slice(0, 6).map(problem => {
+        {problems.map(problem => {
           const status = statuses[problem._id] || 'Unsolved';
           const isSubmitted = status === 'Submitted';
           const difficulty = (problem.difficulty || 'Medium').toLowerCase();
