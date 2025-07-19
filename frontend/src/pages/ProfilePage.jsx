@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import LeetCodeCard from '../components/LeetCodeCard';
+import Sidebar from '../components/Sidebar';
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 function getInitials(name) {
@@ -106,7 +107,9 @@ const ProfilePage = () => {
   const percent = Math.round((solved / total) * 100);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center py-10 px-4">
+    <div className="flex h-screen w-screen bg-background dark:bg-background">
+      <Sidebar />
+      <div className="flex-1 flex flex-col items-center py-10 px-4 overflow-y-auto">
       {/* Edit Profile Modal */}
       {showEdit && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -212,6 +215,7 @@ const ProfilePage = () => {
         ) : (
           <div className="bg-navy rounded-xl p-8 text-center text-red-400 text-lg font-semibold shadow">LeetCode username not set. Please add your LeetCode username to view your LeetCode stats.</div>
         )}
+      </div>
       </div>
     </div>
   );
