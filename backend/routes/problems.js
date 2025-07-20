@@ -32,17 +32,22 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
-// Get a single problem by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id/status', auth, async (req, res) => {
   try {
-    const problem = await Problem.findById(req.params.id);
-    if (!problem) return res.status(404).json({ message: 'Problem not found' });
-    res.json(problem);
+    const userId = req.user.id;
+    const problemId = req.params.id;
+    const submission = await Submission.findOne({ user: userId, problem: problemId, status: 'Submitted' });
+    if (submission) {
+      return res.json({ status: 'Submitted' });
+    } else {
+      return res.json({ status: 'Not Attempted' });
+    }
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
+// Get a single problem by ID
+
 
 // Get sample test cases for a problem
 router.get('/:id/testcases', async (req, res) => {
@@ -91,20 +96,7 @@ router.post('/:id/run', async (req, res) => {
 });
 
 // Get submission status for a user and problem
-router.get('/:id/status', auth, async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const problemId = req.params.id;
-    const submission = await Submission.findOne({ user: userId, problem: problemId, status: 'Submitted' });
-    if (submission) {
-      return res.json({ status: 'Submitted' });
-    } else {
-      return res.json({ status: 'Not Attempted' });
-    }
-  } catch (err) {
-    return res.status(500).json({ message: 'Server error', error: err.message });
-  }
-});
+
 
 // Submit code for all test cases
 router.post('/:id/submit', auth, async (req, res) => {
@@ -154,7 +146,15 @@ router.post('/:id/submit', auth, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
+router.get('/:id', async (req, res) => {
+  try {
+    const problem = await Problem.findById(req.params.id);
+    if (!problem) return res.status(404).json({ message: 'Problem not found' });
+    res.json(problem);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 // Get user statistics: total, solved, remaining
 router.get('/user/statistics', auth, async (req, res) => {
   try {
