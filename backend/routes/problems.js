@@ -7,7 +7,7 @@ const User = require('../models/User');
 
 // Set the compiler URL to port 8000 to match your running service
 const COMPILER_URL = process.env.COMPILER_URL;
-
+const API_BASE_URL=process.env.BACKEND_URL;
 // Auth middleware
 function auth(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -138,11 +138,16 @@ router.post('/:id/submit', auth, async (req, res) => {
     const allPassed = results.every(r => r.passed);
     // If all passed, record submission
     if (allPassed) {
-      await Submission.findOneAndUpdate(
-        { user: userId, problem: problem._id },
-        { code, language, status: 'Submitted', createdAt: new Date() },
-        { upsert: true, new: true }
-      );
+      try {
+        const result = await Submission.findOneAndUpdate(
+          { user: userId, problem: problem._id },
+          { code, language, status: 'Submitted', createdAt: new Date() },
+          { upsert: true, new: true }
+        );
+        console.log('Submission saved:', result);
+      } catch (err) {
+        console.error('Error saving submission:', err);
+      }
     }
     res.json({ results, allPassed });
   } catch (err) {
