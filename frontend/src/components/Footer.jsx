@@ -10,7 +10,7 @@ const Footer = () => (
     </div>
     {/* Center: Copyright */}
     <div className="text-center flex-1 text-sm font-medium">
-      @2025 Crazy Coder All rights reserved under Aditya Narayan
+      © 2025 Crazy Coders. All rights reserved. Developed by Aditya Narayan
     </div>
     {/* Right: Social Icons */}
     <div className="flex items-center gap-4">

@@ -14,17 +14,9 @@ const Sidebar = () => (
         <FaUser className="text-blue-400" />
         Profile
       </Link>
-      <a href="#" className="flex items-center gap-2 bg-blue-700/20 border border-blue-500 rounded-lg px-3 py-2 font-semibold text-blue-300 hover:text-white hover:bg-blue-700/40 transition shadow">
-        <FaTrophy className="text-blue-400" />
-        Contests
-      </a>
-      <a href="#" className="flex items-center gap-2 bg-blue-700/20 border border-blue-500 rounded-lg px-3 py-2 font-semibold text-blue-300 hover:text-white hover:bg-blue-700/40 transition shadow">
-        <FaDumbbell className="text-blue-400" />
-        Practice
-      </a>
       <Link to="/problems" className="flex items-center gap-2 bg-blue-700/20 border border-blue-500 rounded-lg px-3 py-2 font-semibold text-blue-300 hover:text-white hover:bg-blue-700/40 transition shadow">
         <FaEdit className="text-blue-400" />
-        Code Editor
+        Practise
       </Link>
       <Link to="/compiler" className="flex items-center gap-2 bg-blue-700/20 border border-blue-500 rounded-lg px-3 py-2 font-semibold text-blue-300 hover:text-white hover:bg-blue-700/40 transition shadow">
         <FaCode className="text-blue-400" />
