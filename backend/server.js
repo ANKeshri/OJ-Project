@@ -15,8 +15,8 @@ app.use(express.json());
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.log('MongoDB Connection Error:', err));
+    .then(() => {})
+    .catch(err => {});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -26,5 +26,5 @@ app.use('/api/ai', aiRoutes);
 
 const PORT = process.env.PORT ;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    // Server started silently
 }); 
