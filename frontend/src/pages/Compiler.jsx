@@ -72,7 +72,6 @@ const Compiler = () => {
 
   return (
     <div className="flex flex-col h-full w-full bg-navy/80 p-8">
-      <h2 className="text-2xl font-bold text-white mb-6">Online Compiler</h2>
       <div className="flex gap-4 items-center mb-4">
         <select
           className="bg-navy-dark text-white px-3 py-2 rounded border border-navy-dark focus:outline-none focus:ring-2 focus:ring-accentblue"

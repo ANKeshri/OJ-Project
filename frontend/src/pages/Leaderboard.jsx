@@ -41,7 +41,7 @@ const Leaderboard = () => {
         ))}
       </div>
       {/* Table for the rest */}
-      <div className="w-full bg-navy-dark rounded-2xl shadow-lg overflow-x-auto">
+      <div className="w-full bg-navy-dark rounded-2xl shadow-lg overflow-x-auto mb-10">
         <table className="w-full text-left">
           <thead>
             <tr className="bg-gray-800 text-gray-300 text-sm">

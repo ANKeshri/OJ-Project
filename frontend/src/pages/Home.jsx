@@ -8,6 +8,21 @@ const Home = () => {
   const navigate = useNavigate();
   const [navOpen, setNavOpen] = useState(false);
 
+  // Check if user is logged in
+  const isLoggedIn = () => {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    return token && user;
+  };
+
+  const handleGetStarted = () => {
+    if (isLoggedIn()) {
+      navigate('/problems');
+    } else {
+      navigate('/login');
+    }
+  };
+
   useEffect(() => {
     let i = 0;
     const interval = setInterval(() => {
@@ -19,7 +34,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-background text-white p-8 pb-20">
+    <div className="flex flex-col items-center min-h-screen bg-background text-white p-8">
       <div className="text-2xl font-mono text-accentblue mb-2 h-8">
         {typed}
         <span className="animate-pulse">|</span>
@@ -30,7 +45,9 @@ const Home = () => {
         Your journey to coding mastery starts here!
       </p>
       <div className="flex gap-4 mb-12">
-        <button className="bg-accentblue hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold shadow" onClick={() => navigate('/signup')}>Get Started</button>
+        <button className="bg-accentblue hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold shadow" onClick={handleGetStarted}>
+          {isLoggedIn() ? 'Practice Problems' : 'Get Started'}
+        </button>
         <a href="https://github.com/ANKeshri/OJ-Project" target="_blank" rel="noopener noreferrer" className="border border-accentblue text-accentblue px-6 py-2 rounded font-semibold hover:bg-accentblue hover:text-white transition">View on GitHub</a>
       </div>
       <div className="w-full max-w-3xl bg-navy-dark rounded-lg shadow-lg p-6 mt-4">

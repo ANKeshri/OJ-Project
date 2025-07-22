@@ -26,8 +26,8 @@ function App() {
                 <Topbar />
                 <main className="flex-1 overflow-y-auto">
                   <Home />
+                  <Footer />
                 </main>
-                <Footer />
               </div>
             </div>
           } />
@@ -39,8 +39,8 @@ function App() {
                 <Topbar />
                 <main className="flex-1 overflow-y-auto">
                   <Problems />
+                  <Footer />
                 </main>
-                <Footer />
               </div>
             </div>
           } />
@@ -51,8 +51,8 @@ function App() {
                 <Topbar />
                 <main className="flex-1 overflow-y-auto">
                   <ProblemEditor />
+                  <Footer />
                 </main>
-                <Footer />
               </div>
             </div>
           } />
@@ -63,8 +63,8 @@ function App() {
                 <Topbar />
                 <main className="flex-1 overflow-y-auto">
                   <Compiler />
+                  <Footer />
                 </main>
-                <Footer />
               </div>
             </div>
           } />
@@ -73,10 +73,10 @@ function App() {
               <Sidebar />
               <div className="flex-1 flex flex-col">
                 <Topbar />
-                <main className="flex-1 overflow-y-auto flex flex-col items-center w-full py-12 px-2">
+                <main className="flex-1 overflow-y-auto flex flex-col items-center w-full px-2">
                   <Leaderboard />
+                  <Footer />
                 </main>
-                <Footer />
               </div>
             </div>
           } />
