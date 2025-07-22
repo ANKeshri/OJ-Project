@@ -164,7 +164,6 @@ router.post('/:id/submit', auth, async (req, res) => {
           { code, language, status: 'Submitted', createdAt: new Date() },
           { upsert: true, new: true }
         );
-        console.log('Submission saved:', result);
       } catch (err) {
         console.error('Error saving submission:', err);
       }
