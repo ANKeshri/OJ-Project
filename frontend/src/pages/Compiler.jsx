@@ -87,59 +87,71 @@ const Compiler = () => {
           ))}
         </select>
       </div>
-      {/* Replace textarea for code input with Monaco Editor */}
-      <div className="w-full h-64 mb-4">
-        <Editor
-          height="100%"
-          width="100%"
-          theme="vs-dark"
-          language={language === "cpp" ? "cpp" : language}
-          value={code}
-          onChange={value => setCode(value || "")}
-          options={{
-            fontSize: 16,
-            minimap: { enabled: false },
-            lineNumbers: "on",
-            scrollBeyondLastLine: false,
-            automaticLayout: true,
-            wordWrap: "on",
-          }}
-        />
-      </div>
-      <textarea
-        className="w-full h-20 bg-navy-dark text-white p-2 rounded border border-navy-dark mb-4"
-        placeholder="Custom input (optional)"
-        value={input}
-        onChange={e => setInput(e.target.value)}
-      />
-      <div className="flex flex-col gap-2 mb-4">
-        <label className="text-sm text-gray-400">Output</label>
-        <textarea
-          className="w-full h-32 bg-navy-dark text-white p-2 rounded border border-navy-dark"
-          value={output}
-          readOnly
-        />
-      </div>
-      <button
-        className="bg-accentblue text-white px-6 py-2 rounded font-semibold shadow hover:bg-accentblue/80 transition-colors w-32"
-        onClick={handleRun}
-        disabled={isRunning}
-      >
-        {isRunning ? 'Running...' : 'Run'}
-      </button>
-      <button
-        className="bg-purple-600 text-white px-6 py-2 rounded font-semibold shadow hover:bg-purple-700 transition-colors w-48 mt-2"
-        onClick={handleAnalyseWithAI}
-        disabled={isAnalysing}
-      >
-        {isAnalysing ? 'Analysing...' : 'Analyse with AI'}
-      </button>
-      {aiAnalysis && (
-        <div className="mt-4 p-4 bg-navy-dark text-white rounded border border-purple-600 whitespace-pre-line">
-          <strong>AI Analysis:</strong>
-          <div>{aiAnalysis}</div>
+      <div className="flex flex-1 min-h-[500px] h-[70vh] gap-6">
+        {/* Left: Code Editor */}
+        <div className="w-1/2 h-full bg-navy-dark rounded-2xl shadow-lg p-2 flex flex-col">
+          <Editor
+            height="100%"
+            width="100%"
+            theme="vs-dark"
+            language={language === "cpp" ? "cpp" : language}
+            value={code}
+            onChange={value => setCode(value || "")}
+            options={{
+              fontSize: 16,
+              minimap: { enabled: false },
+              lineNumbers: "on",
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+              wordWrap: "on",
+            }}
+          />
         </div>
-      )}
+        {/* Right: Input/Output Split */}
+        <div className="w-1/2 h-full flex flex-col gap-4">
+          {/* Top: Custom Input and Buttons */}
+          <div className="flex-1 bg-navy-dark rounded-2xl shadow-lg p-4 flex flex-col mb-2">
+            <label className="text-white font-semibold mb-2">Custom Input (optional)</label>
+            <textarea
+              className="w-full h-24 bg-gray-800 text-white p-2 rounded border border-navy-dark mb-4 resize-none"
+              placeholder="Enter custom input..."
+              value={input}
+              onChange={e => setInput(e.target.value)}
+            />
+            <div className="flex gap-4 mt-auto">
+              <button
+                className="bg-accentblue text-white px-6 py-2 rounded font-semibold shadow hover:bg-accentblue/80 transition-colors w-32"
+                onClick={handleRun}
+                disabled={isRunning}
+              >
+                {isRunning ? 'Running...' : 'Run'}
+              </button>
+              <button
+                className="bg-purple-600 text-white px-6 py-2 rounded font-semibold shadow hover:bg-purple-700 transition-colors w-48"
+                onClick={handleAnalyseWithAI}
+                disabled={isAnalysing}
+              >
+                {isAnalysing ? 'Analysing...' : 'Analyse with AI'}
+              </button>
+            </div>
+          </div>
+          {/* Bottom: Output and AI Analysis */}
+          <div className="flex-1 bg-navy-dark rounded-2xl shadow-lg p-4 flex flex-col">
+            <label className="text-white font-semibold mb-2">Output</label>
+            <textarea
+              className="w-full h-24 bg-gray-800 text-white p-2 rounded border border-navy-dark mb-2 resize-none"
+              value={output}
+              readOnly
+            />
+            {aiAnalysis && (
+              <div className="mt-2 p-3 bg-gray-900 text-white rounded border border-purple-600 whitespace-pre-line">
+                <strong>AI Analysis:</strong>
+                <div>{aiAnalysis}</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

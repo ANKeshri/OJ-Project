@@ -14,6 +14,10 @@ const Problems = () => {
   const [statuses, setStatuses] = useState({}); // NEW STATE
   const navigate = useNavigate();
   const [user, setUser] = useState(null); // NEW STATE
+  // Filter states
+  const [difficulty, setDifficulty] = useState('all');
+  const [solved, setSolved] = useState('unsolved');
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
@@ -22,7 +26,14 @@ const Problems = () => {
   }, []);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/problems`)
+    // Build query params
+    let query = [];
+    if (difficulty !== 'all') query.push(`difficulty=${difficulty}`);
+    if (solved !== 'all') query.push(`solved=${solved === 'solved' ? 'true' : 'false'}`);
+    const queryString = query.length ? `?${query.join('&')}` : '';
+    fetch(`${API_BASE_URL}/api/problems${queryString}`, {
+      headers: solved !== 'all' ? { 'Authorization': `Bearer ${localStorage.getItem('token')}` } : {}
+    })
       .then(res => res.json())
       .then(probs => {
         setProblems(probs);
@@ -51,13 +62,56 @@ const Problems = () => {
       .catch(() => {
         toast.error('Failed to fetch problems.');
       });
-  }, [user]);
+  }, [user, difficulty, solved]);
+
+  // Filtered problems by search (frontend)
+  const filteredProblems = problems.filter(problem => {
+    const searchLower = search.toLowerCase();
+    const titleMatch = problem.title.toLowerCase().includes(searchLower);
+    const tagsMatch = (problem.tags || []).some(tag => tag.toLowerCase().includes(searchLower));
+    return titleMatch || tagsMatch;
+  });
 
   return (
     <div className="flex flex-col items-center w-full min-h-screen bg-background dark:bg-background py-12 px-2">
       <h1 className="text-4xl font-extrabold mb-12 text-center text-white tracking-tight drop-shadow">Practice Questions</h1>
+      {/* Filter Bar */}
+      <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-7xl mb-8 gap-4 p-4 bg-navy-dark rounded-2xl shadow-lg">
+        {/* Search Bar */}
+        <div className="flex-1 w-full md:w-auto flex items-center">
+          <span className="mr-2 text-xl">🔍</span>
+          <input
+            type="text"
+            className="w-full md:w-80 bg-gray-800 text-white px-4 py-2 rounded-lg border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
+            placeholder="Search problems by name or tag..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
+        {/* Difficulty Dropdown */}
+        <select
+          className="bg-navy-dark text-white px-4 py-2 rounded-lg border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          value={difficulty}
+          onChange={e => setDifficulty(e.target.value)}
+        >
+          <option value="all">All Difficulties</option>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+        {/* Solved Dropdown */}
+        <select
+          className="bg-navy-dark text-pink-400 px-4 py-2 rounded-lg border border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-300"
+          value={solved}
+          onChange={e => setSolved(e.target.value)}
+        >
+          <option value="unsolved">Unsolved</option>
+          <option value="solved">Solved</option>
+          <option value="all">All</option>
+        </select>
+      </div>
       <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {problems.map(problem => {
+        {filteredProblems.map(problem => {
           const status = statuses[problem._id] || 'Unsolved';
           const isSubmitted = status === 'Submitted';
           const difficulty = (problem.difficulty || 'Medium').toLowerCase();

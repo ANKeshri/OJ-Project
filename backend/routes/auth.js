@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
+const Submission = require('../models/Submission'); // Added Submission model import
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -184,6 +185,35 @@ router.patch('/profile', auth, async (req, res) => {
       dob: user.dob,
       createdAt: user.createdAt
     }});
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// Leaderboard route: returns users with solved count and rating
+router.get('/leaderboard', async (req, res) => {
+  try {
+    const users = await User.find({}, 'fullName email');
+    // For each user, count unique problems with a 'Submitted' submission
+    const leaderboard = await Promise.all(users.map(async user => {
+      const solvedProblems = await Submission.distinct('problem', { user: user._id, status: 'Submitted' });
+      const solved = solvedProblems.length;
+      // Simple rating: 1500 + 10*solved
+      const rating = 1500 + 10 * solved;
+      return {
+        name: user.fullName,
+        email: user.email,
+        solved,
+        rating
+      };
+    }));
+    // Sort by solved descending, then rating descending
+    leaderboard.sort((a, b) => b.solved - a.solved || b.rating - a.rating);
+    // Add rank
+    leaderboard.forEach((entry, idx) => {
+      entry.rank = idx + 1;
+    });
+    res.json(leaderboard);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
