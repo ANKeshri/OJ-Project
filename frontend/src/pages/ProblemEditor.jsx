@@ -43,6 +43,9 @@ const ProblemEditor = () => {
   const [status, setStatus] = useState('Not Attempted'); // NEW STATE
   const [user, setUser] = useState(null); // NEW STATE
   const [statusLoading, setStatusLoading] = useState(true); // NEW STATE
+  const [submissions, setSubmissions] = useState([]); // NEW STATE for submissions
+  const [submissionsLoading, setSubmissionsLoading] = useState(false); // NEW STATE
+  const [selectedSubmission, setSelectedSubmission] = useState(null); // NEW STATE
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
@@ -83,6 +86,44 @@ const ProblemEditor = () => {
         setStatusLoading(false);
       });
   }, [id, user]);
+
+  // Function to fetch submissions for this problem
+  const fetchSubmissions = async () => {
+    if (!user) return;
+    setSubmissionsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/problems/${id}/submissions`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await res.json();
+      setSubmissions(data || []);
+    } catch (err) {
+      console.error('Error fetching submissions:', err);
+      setSubmissions([]);
+    }
+    setSubmissionsLoading(false);
+  };
+
+  // Function to fetch a specific submission's code
+  const fetchSubmissionCode = async (submissionId) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/problems/submissions/${submissionId}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await res.json();
+      setSelectedSubmission(data);
+    } catch (err) {
+      console.error('Error fetching submission code:', err);
+      toast.error('Error loading submission details');
+    }
+  };
+
+  // Fetch submissions when tab changes to submissions
+  useEffect(() => {
+    if (activeTab === 'submissions' && user) {
+      fetchSubmissions();
+    }
+  }, [activeTab, user, id]);
 
   useEffect(() => {
     setCode(defaultCode[language]);
@@ -131,7 +172,11 @@ const ProblemEditor = () => {
         toast.success('All test cases passed! Submitted successfully.');
         setStatus('Submitted');
       } else {
-        toast.error('Some test cases failed. Not submitted.');
+        toast.error('Some test cases failed. Submission saved.');
+      }
+      // Refresh submissions if we're on submissions tab
+      if (activeTab === 'submissions') {
+        fetchSubmissions();
       }
     } catch (err) {
       setSubmitResults([{ error: 'Error submitting code' }]);
@@ -169,54 +214,178 @@ const ProblemEditor = () => {
           {/* Tabs */}
           <div className="flex items-center gap-2 px-8 pt-6 pb-2 border-b border-navy-dark bg-navy/90 sticky top-0 z-10">
             <button className={`font-semibold px-3 py-2 rounded-t ${activeTab==='description' ? 'bg-background text-accentblue' : 'text-gray-300 hover:text-accentblue'}`} onClick={()=>setActiveTab('description')}>Description</button>
-            <button className="font-semibold px-3 py-2 rounded-t text-gray-400 cursor-not-allowed" disabled>Editorial</button>
-            <button className="font-semibold px-3 py-2 rounded-t text-gray-400 cursor-not-allowed" disabled>Solutions</button>
-            <button className="font-semibold px-3 py-2 rounded-t text-gray-400 cursor-not-allowed" disabled>Submissions</button>
+            <button 
+              className={`font-semibold px-3 py-2 rounded-t ${activeTab==='submissions' ? 'bg-background text-accentblue' : (user ? 'text-gray-300 hover:text-accentblue' : 'text-gray-400 cursor-not-allowed')}`} 
+              onClick={()=> user && setActiveTab('submissions')}
+              disabled={!user}
+            >
+              Submissions
+            </button>
           </div>
           {/* Problem Content */}
           <div className="px-8 py-6">
-            <div className="rounded-2xl shadow-xl border-l-4 border-blue-500 bg-gradient-to-br from-navy via-navy-dark to-navy/80 p-6 mb-6">
-              <div className="flex items-center gap-4 mb-2">
-                <h2 className="text-3xl font-bold text-white">{problem.title}</h2>
-                {/* Difficulty badge */}
-                <span className={`text-xs font-bold px-3 py-1 rounded-full capitalize ${
-                  (problem.difficulty || 'Medium').toLowerCase() === 'easy' ? 'bg-green-600 text-white' :
-                  (problem.difficulty || 'Medium').toLowerCase() === 'hard' ? 'bg-red-600 text-white' :
-                  'bg-yellow-500 text-white'
-                }`}>
-                  {problem.difficulty || 'Medium'}
-                </span>
-                {/* Status badge */}
-                <span className={`ml-2 ${status === 'Submitted' ? 'bg-green-700 text-green-200' : 'bg-gray-700 text-gray-200'} text-xs font-semibold px-3 py-1 rounded-full`}>
-                  {status}
-                </span>
+            {activeTab === 'description' && (
+              <div className="rounded-2xl shadow-xl border-l-4 border-blue-500 bg-gradient-to-br from-navy via-navy-dark to-navy/80 p-6 mb-6">
+                <div className="flex items-center gap-4 mb-2">
+                  <h2 className="text-3xl font-bold text-white">{problem.title}</h2>
+                  {/* Difficulty badge */}
+                  <span className={`text-xs font-bold px-3 py-1 rounded-full capitalize ${
+                    (problem.difficulty || 'Medium').toLowerCase() === 'easy' ? 'bg-green-600 text-white' :
+                    (problem.difficulty || 'Medium').toLowerCase() === 'hard' ? 'bg-red-600 text-white' :
+                    'bg-yellow-500 text-white'
+                  }`}>
+                    {problem.difficulty || 'Medium'}
+                  </span>
+                  {/* Status badge */}
+                  <span className={`ml-2 ${status === 'Submitted' ? 'bg-green-700 text-green-200' : 'bg-gray-700 text-gray-200'} text-xs font-semibold px-3 py-1 rounded-full`}>
+                    {status}
+                  </span>
+                </div>
+                {/* Tags */}
+                <div className="flex gap-2 mb-4 flex-wrap">
+                  {(problem.tags || []).map((tag, idx) => (
+                    <span key={idx} className="bg-blue-900/60 text-blue-300 text-xs px-2 py-1 rounded">{tag}</span>
+                  ))}
+                </div>
+                <div className="text-gray-200 text-base mb-6 whitespace-pre-line">
+                  {problem.description}
+                </div>
+                <div className="mb-6">
+                  <span className="font-semibold text-white">Constraints:</span>
+                  <div className="text-gray-300 text-sm mt-1">{problem.constraints}</div>
+                </div>
+                {/* Examples (from sampleTestCases) */}
+                <div className="mb-6">
+                  <span className="font-semibold text-white">Examples:</span>
+                  {sampleTestCases.map((s, i) => (
+                    <div key={i} className="bg-navy-dark/80 rounded-lg p-4 my-2">
+                      <div className="text-gray-400 text-xs mb-1">Input:</div>
+                      <pre className="bg-navy-dark text-white rounded px-2 py-1 mb-2 whitespace-pre-wrap">{s.input}</pre>
+                      <div className="text-gray-400 text-xs mb-1">Output:</div>
+                      <pre className="bg-navy-dark text-white rounded px-2 py-1 whitespace-pre-wrap">{s.output}</pre>
+                    </div>
+                  ))}
+                </div>
               </div>
-              {/* Tags */}
-              <div className="flex gap-2 mb-4 flex-wrap">
-                {(problem.tags || []).map((tag, idx) => (
-                  <span key={idx} className="bg-blue-900/60 text-blue-300 text-xs px-2 py-1 rounded">{tag}</span>
-                ))}
-              </div>
-              <div className="text-gray-200 text-base mb-6 whitespace-pre-line">
-                {problem.description}
-              </div>
-              <div className="mb-6">
-                <span className="font-semibold text-white">Constraints:</span>
-                <div className="text-gray-300 text-sm mt-1">{problem.constraints}</div>
-              </div>
-              {/* Examples (from sampleTestCases) */}
-              <div className="mb-6">
-                <span className="font-semibold text-white">Examples:</span>
-                {sampleTestCases.map((s, i) => (
-                  <div key={i} className="bg-navy-dark/80 rounded-lg p-4 my-2">
-                    <div className="text-gray-400 text-xs mb-1">Input:</div>
-                    <pre className="bg-navy-dark text-white rounded px-2 py-1 mb-2 whitespace-pre-wrap">{s.input}</pre>
-                    <div className="text-gray-400 text-xs mb-1">Output:</div>
-                    <pre className="bg-navy-dark text-white rounded px-2 py-1 whitespace-pre-wrap">{s.output}</pre>
+            )}
+            
+            {activeTab === 'submissions' && (
+              <div className="rounded-2xl shadow-xl border-l-4 border-purple-500 bg-gradient-to-br from-navy via-navy-dark to-navy/80 p-6 mb-6">
+                <h2 className="text-3xl font-bold text-white mb-4">Your Submissions</h2>
+                {!user && (
+                  <div className="text-gray-300 text-center py-8">
+                    Please log in to view your submissions.
                   </div>
-                ))}
+                )}
+                {user && submissionsLoading && (
+                  <div className="text-gray-300 text-center py-8">
+                    Loading submissions...
+                  </div>
+                )}
+                {user && !submissionsLoading && submissions.length === 0 && (
+                  <div className="text-gray-300 text-center py-8">
+                    No submissions yet. Submit your solution to see it here!
+                  </div>
+                )}
+                {user && !submissionsLoading && submissions.length > 0 && (
+                  <div className="space-y-3">
+                    {submissions.map((submission, idx) => (
+                      <div 
+                        key={submission._id} 
+                        className="bg-navy-dark/80 rounded-lg p-4 hover:bg-navy-dark cursor-pointer transition-colors border border-navy-dark hover:border-accentblue"
+                        onClick={() => fetchSubmissionCode(submission._id)}
+                      >
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center gap-4">
+                            <span className="text-gray-400 text-sm">#{idx + 1}</span>
+                            <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                              submission.status === 'Submitted' 
+                                ? 'bg-green-700 text-green-200' 
+                                : 'bg-red-700 text-red-200'
+                            }`}>
+                              {submission.status === 'Submitted' ? 'Accepted' : 'Failed'}
+                            </span>
+                            <span className="text-gray-300 text-sm capitalize">
+                              {submission.language}
+                            </span>
+                          </div>
+                          <div className="text-gray-400 text-sm">
+                            {new Date(submission.submittedAt).toLocaleString()}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Submission Code Modal/Details */}
+                {selectedSubmission && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-navy rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                      <div className="p-6 border-b border-navy-dark">
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-xl font-bold text-white">
+                            Submission Details
+                          </h3>
+                          <button 
+                            onClick={() => setSelectedSubmission(null)}
+                            className="text-gray-400 hover:text-white text-2xl"
+                          >
+                            ×
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-4 mt-2">
+                          <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                            selectedSubmission.status === 'Submitted' 
+                              ? 'bg-green-700 text-green-200' 
+                              : 'bg-red-700 text-red-200'
+                          }`}>
+                            {selectedSubmission.status === 'Submitted' ? 'Accepted' : 'Failed'}
+                          </span>
+                          <span className="text-gray-300 text-sm capitalize">
+                            {selectedSubmission.language}
+                          </span>
+                          <span className="text-gray-400 text-sm">
+                            {new Date(selectedSubmission.submittedAt).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-6">
+                        <h4 className="text-lg font-semibold text-white mb-3">Code:</h4>
+                        <pre className="bg-navy-dark text-white rounded p-4 overflow-x-auto whitespace-pre-wrap">
+                          {selectedSubmission.code}
+                        </pre>
+                        {selectedSubmission.testResults && selectedSubmission.testResults.length > 0 && (
+                          <div className="mt-6">
+                            <h4 className="text-lg font-semibold text-white mb-3">Test Results:</h4>
+                            <div className="space-y-2">
+                              {selectedSubmission.testResults.map((result, i) => (
+                                <div key={i} className={`rounded-lg p-3 border ${
+                                  result.passed ? 'border-green-500 bg-green-900/20' : 'border-red-500 bg-red-900/20'
+                                }`}>
+                                  <div className="flex justify-between items-center mb-2">
+                                    <span className="text-sm text-gray-400">Test Case {i + 1}</span>
+                                    <span className={`text-sm font-semibold ${result.passed ? 'text-green-400' : 'text-red-400'}`}>
+                                      {result.passed ? 'Passed' : 'Failed'}
+                                    </span>
+                                  </div>
+                                  {!result.passed && (
+                                    <div className="text-xs text-gray-300">
+                                      <div className="mb-1"><strong>Expected:</strong> {result.expectedOutput}</div>
+                                      <div><strong>Got:</strong> {result.userOutput}</div>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
           </div>
         </div>
         {/* Right: Code Editor */}

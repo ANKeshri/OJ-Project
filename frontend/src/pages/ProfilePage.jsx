@@ -20,6 +20,9 @@ const ProfilePage = () => {
   const [editForm, setEditForm] = useState({ fullName: '', leetcodeProfile: '', dob: '' });
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState('');
+  const [submissions, setSubmissions] = useState([]);
+  const [submissionsLoading, setSubmissionsLoading] = useState(false);
+  const [selectedSubmission, setSelectedSubmission] = useState(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
@@ -48,6 +51,39 @@ const ProfilePage = () => {
       })
       .catch(() => setStatsLoading(false));
   }, [user]);
+
+  // Fetch user submissions
+  useEffect(() => {
+    if (!user) return;
+    setSubmissionsLoading(true);
+    fetch(`${API_BASE_URL}/api/problems/user/submissions`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+      .then(res => res.json())
+      .then(data => {
+        // Ensure data is an array, even if API returns an error object
+        setSubmissions(Array.isArray(data) ? data : []);
+        setSubmissionsLoading(false);
+      })
+      .catch(() => {
+        setSubmissions([]); // Set to empty array on error
+        setSubmissionsLoading(false);
+      });
+  }, [user]);
+
+  // Function to fetch a specific submission's code
+  const fetchSubmissionCode = async (submissionId) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/problems/submissions/${submissionId}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await res.json();
+      setSelectedSubmission(data);
+    } catch (err) {
+      console.error('Error fetching submission code:', err);
+      toast.error('Error loading submission details');
+    }
+  };
 
   const handleEdit = () => setShowEdit(true);
   const handleEditChange = e => setEditForm(f => ({ ...f, [e.target.name]: e.target.value }));
@@ -211,7 +247,7 @@ const ProfilePage = () => {
         </div>
       </div>
       {/* LeetCode Stats Card */}
-      <div className="w-full max-w-3xl bg-navy-dark/80 rounded-2xl shadow-2xl p-8">
+      <div className="w-full max-w-3xl bg-navy-dark/80 rounded-2xl shadow-2xl p-8 mb-8">
         <h3 className="text-2xl font-bold text-white mb-6 tracking-wide">LeetCode Statistics</h3>
         {user.leetcodeProfile ? (
           <LeetCodeCard leetcodeProfile={user.leetcodeProfile} />
@@ -219,6 +255,7 @@ const ProfilePage = () => {
           <div className="bg-navy rounded-xl p-8 text-center text-red-400 text-lg font-semibold shadow">LeetCode username not set. Please add your LeetCode username to view your LeetCode stats.</div>
         )}
       </div>
+
       </div>
     </div>
   );
