@@ -17,6 +17,7 @@ const Footer = () => (
       <a href="https://www.instagram.com/ankeshri/" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition"><FaInstagram size={22} /></a>
       <a href="https://www.linkedin.com/in/aditya-narayan-ank/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition"><FaLinkedin size={22} /></a>
       <a href="https://github.com/ANKeshri" target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition"><FaGithub size={22} /></a>
+      
     </div>
   </footer>
 );
