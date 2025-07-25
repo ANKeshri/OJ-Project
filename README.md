@@ -148,10 +148,5 @@ node scripts/seedProblems.js
 
 ---
 
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
 
 **Built with ❤️ using the MERN Stack** 
